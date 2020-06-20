@@ -1,7 +1,6 @@
 const SlackBot = require('slackbots');
-const Bot = new SlackBot({
+const newBot = new SlackBot({
    token: '',
    name: 'Bot Game',
 });
-
-module.exports = Bot;
+export default newBot;

@@ -1,4 +1,10 @@
-class Game {
+class GameClass {
+   guessCount: number;
+   gameOver: boolean;
+   randomNumber: number;
+   winner: string;
+   response: string;
+
    constructor() {
       this.guessCount = 0;
       this.gameOver = false;
@@ -8,7 +14,7 @@ class Game {
          'Welcome to the Slack Bot Game, try and guess what number I am thinking of between 0 and 10';
    }
 
-   play(guess, user) {
+   play(guess: number, user: string): void {
       if (guess < this.randomNumber) {
          this.response = "The number I'm thinking of is lower.";
       } else if (guess > this.randomNumber) {
@@ -28,4 +34,4 @@ class Game {
    }
 }
 
-module.exports = Game;
+export default GameClass;

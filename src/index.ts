@@ -1,8 +1,8 @@
-const Bot = require('./Bot');
-const Game = require('./models/Game');
-let game;
+import Bot from './Bot';
+import Game from './models/Game';
+let game = new Game();
 
-const responseToUser = async (g) => {
+const responseToUser = async (g: Game) => {
    var params = {
       icon_emoji: ':heart_eyes:',
    };
@@ -23,22 +23,20 @@ const responseToUser = async (g) => {
 
 Bot.on('start', function () {
    // start a game in when the app start
-   game = new Game();
    responseToUser(game);
 });
 
-Bot.on('message', function (data) {
+Bot.on('message', function (data: any) {
    if (data.type !== 'message' || data.subtype === 'bot_message') {
       return;
    }
-   console.info('data!!!!!!:', data);
    const guess = parseInt(data.text);
    // play the game when get user's message
    game.play(guess, data.user);
    responseToUser(game);
 });
 
-Bot.on('error', function (err) {
+Bot.on('error', function (err: string) {
    // catch the error message
    console.info(err);
 });

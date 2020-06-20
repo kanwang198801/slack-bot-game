@@ -4,7 +4,8 @@
    "description": "Slack bot game",
    "main": "index.js",
    "scripts": {
-      "start": "node src/index.js"
+      "start": "ts-node-dev src/index.ts",
+      "build": "tsc"
    },
    "repository": {
       "type": "git",
@@ -17,6 +18,11 @@
    },
    "homepage": "https://github.com/kanwang198801/slack-bot-game#readme",
    "dependencies": {
+      "@types/node": "^14.0.13",
       "slackbots": "^1.2.0"
+   },
+   "devDependencies": {
+      "ts-node-dev": "^1.0.0-pre.49",
+      "typescript": "^3.9.5"
    }
 }
