@@ -1,6 +1,16 @@
 import Bot from './Bot';
 import Game from './models/Game';
-let game = new Game();
+const store = require('data-store')({ path: process.cwd() + '/game.json' });
+let game: Game;
+
+if (store.get('Game')) {
+   const { guessCount, gameOver, randomNumber, winner, response } = store.get(
+      'Game'
+   );
+   game = new Game(guessCount, gameOver, randomNumber, winner, response);
+} else {
+   game = new Game();
+}
 
 const responseToUser = async (g: Game) => {
    var params = {
@@ -32,8 +42,12 @@ Bot.on('message', function (data: any) {
    }
    const guess = parseInt(data.text);
    // play the game when get user's message
-   game.play(guess, data.user);
+   game.play(guess);
    responseToUser(game);
+
+   // set current game to local
+   store.set('Game', game);
+   console.log();
 });
 
 Bot.on('error', function (err: string) {

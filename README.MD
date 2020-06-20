@@ -6,6 +6,6 @@ npm install
 
 npm start
 
-### Api reference
+### slack-bot-api reference
 
 https://github.com/mishk0/slack-bot-api
