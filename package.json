@@ -1,0 +1,22 @@
+{
+   "name": "slack-bot-game",
+   "version": "1.0.0",
+   "description": "Slack bot game",
+   "main": "index.js",
+   "scripts": {
+      "start": "node src/index.js"
+   },
+   "repository": {
+      "type": "git",
+      "url": "git+https://github.com/kanwang198801/slack-bot-game.git"
+   },
+   "author": "Kan Wang",
+   "license": "ISC",
+   "bugs": {
+      "url": "https://github.com/kanwang198801/slack-bot-game/issues"
+   },
+   "homepage": "https://github.com/kanwang198801/slack-bot-game#readme",
+   "dependencies": {
+      "slackbots": "^1.2.0"
+   }
+}
