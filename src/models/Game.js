@@ -3,11 +3,12 @@ class Game {
       this.guessCount = 0;
       this.gameOver = false;
       this.randomNumber = Math.floor(Math.random() * 10);
+      this.winner = 'Bot';
       this.response =
          'Welcome to the Slack Bot Game, try and guess what number I am thinking of between 0 and 10';
    }
 
-   play(guess) {
+   play(guess, user) {
       if (guess < this.randomNumber) {
          this.response = "The number I'm thinking of is lower.";
       } else if (guess > this.randomNumber) {
@@ -16,6 +17,7 @@ class Game {
          this.response =
             'Congratulations! You guessed the number I was thinking of!';
          this.gameOver = true;
+         this.winner = user;
       } else {
          this.response = 'Invalid input';
       }
