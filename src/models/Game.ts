@@ -10,7 +10,7 @@ class GameClass {
       gameOver = false,
       randomNumber = Math.floor(Math.random() * 10),
       winner = 'Bot',
-      response = 'Welcome to the Slack Bot Game, try and guess what number I am thinking of between 0 and 10'
+      response = ''
    ) {
       this.guessCount = guessCount;
       this.gameOver = gameOver;

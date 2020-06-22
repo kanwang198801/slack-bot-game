@@ -19,7 +19,6 @@ const responseToUser = async () => {
          params
       );
       await Bot.postMessageToChannel('general', 'Game over!', params);
-      console.info('currentUser', currentUser);
       store.del(currentUser);
       initGame();
    }
@@ -39,27 +38,36 @@ const initGame = async () => {
    } else {
       // start a new game
       game = new Game();
-      await Bot.postMessageToChannel('general', game.response, params);
    }
+   await Bot.postMessageToChannel(
+      'general',
+      ' Welcome to the Slack Bot Game, try and guess what number I am thinking of between 0 and 10!',
+      params
+   );
 };
 
 Bot.on('message', function (data: any) {
-   const { type, subtype } = data;
+   const { type, subtype, text } = data;
    if (type !== 'message' || subtype === 'bot_message') {
       return;
    }
-   const { user, text } = data;
-   const guess = parseInt(text);
+   if (!game && text !== 'botgame start') {
+      return;
+   }
+   const { user } = data;
    currentUser = user;
-   // init game
    if (!game) {
       initGame();
+      return;
+   } else {
+      const guess = parseInt(text);
+      // play the game when get user's message
+      game.play(guess);
+      responseToUser();
+
+      // set current game to local
+      store.set(data.user, { game: game });
    }
-   // play the game when get user's message
-   game.play(guess);
-   responseToUser();
-   // set current game to local
-   store.set(data.user, { game: game });
 });
 
 Bot.on('error', function (err: string) {
