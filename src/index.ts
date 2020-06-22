@@ -1,56 +1,67 @@
 import Bot from './Bot';
 import Game from './models/Game';
+
 const store = require('data-store')({ path: process.cwd() + '/game.json' });
 let game: Game;
+let currentUser: string;
+const params = {
+   icon_emoji: ':heart_eyes:',
+};
 
-if (store.get('Game')) {
-   const { guessCount, gameOver, randomNumber, winner, response } = store.get(
-      'Game'
-   );
-   game = new Game(guessCount, gameOver, randomNumber, winner, response);
-} else {
-   game = new Game();
-}
-
-const responseToUser = async (g: Game) => {
-   var params = {
-      icon_emoji: ':heart_eyes:',
-   };
-   // return message to users
-   await Bot.postMessageToChannel('general', g.response, params);
-   if (g.gameOver) {
+const responseToUser = async () => {
+   const { response, gameOver, winner } = game;
+   // return message to user
+   await Bot.postMessageToChannel('general', response, params);
+   if (gameOver) {
       await Bot.postMessageToChannel(
          'general',
-         `Our winner is ${g.winner}`,
+         `Our winner is ${winner}`,
          params
       );
       await Bot.postMessageToChannel('general', 'Game over!', params);
-      // start a new game
-      game = new Game();
-      responseToUser(game);
+      console.info('currentUser', currentUser);
+      store.del(currentUser);
+      initGame();
    }
 };
 
-Bot.on('start', function () {
-   // start a game in when the app start
-   responseToUser(game);
-});
+const initGame = async () => {
+   if (store.get(currentUser)) {
+      // continue an old game
+      const {
+         guessCount,
+         gameOver,
+         randomNumber,
+         winner,
+         response,
+      } = store.get(currentUser).game;
+      game = new Game(guessCount, gameOver, randomNumber, winner, response);
+   } else {
+      // start a new game
+      game = new Game();
+      await Bot.postMessageToChannel('general', game.response, params);
+   }
+};
 
 Bot.on('message', function (data: any) {
-   if (data.type !== 'message' || data.subtype === 'bot_message') {
+   const { type, subtype } = data;
+   if (type !== 'message' || subtype === 'bot_message') {
       return;
    }
-   const guess = parseInt(data.text);
+   const { user, text } = data;
+   const guess = parseInt(text);
+   currentUser = user;
+   // init game
+   if (!game) {
+      initGame();
+   }
    // play the game when get user's message
    game.play(guess);
-   responseToUser(game);
-
+   responseToUser();
    // set current game to local
-   store.set('Game', game);
-   console.log();
+   store.set(data.user, { game: game });
 });
 
 Bot.on('error', function (err: string) {
-   // catch the error message
    console.info(err);
 });

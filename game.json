@@ -1,0 +1,11 @@
+{
+  "U0160CWUH9A": {
+    "game": {
+      "guessCount": 2,
+      "gameOver": false,
+      "randomNumber": 8,
+      "winner": "Bot",
+      "response": "The number I'm thinking of is lower."
+    }
+  }
+}
