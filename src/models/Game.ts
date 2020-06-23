@@ -1,4 +1,6 @@
 class GameClass {
+   player: string;
+   channel: string;
    guessCount: number;
    gameOver: boolean;
    randomNumber: number;
@@ -6,13 +8,17 @@ class GameClass {
    response: string;
 
    constructor(
+      player: string,
+      channel: string,
       guessCount = 0,
       gameOver = false,
       randomNumber = Math.floor(Math.random() * 10),
       winner = 'Bot',
       response = ''
    ) {
-      this.guessCount = guessCount;
+      this.player = player;
+      this.channel = channel;
+      this.guessCount = guessCount || 0;
       this.gameOver = gameOver;
       this.randomNumber = randomNumber;
       this.winner = winner;

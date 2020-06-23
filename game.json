@@ -1,1 +1,11 @@
-{}
+{
+  "U015QGTKGPM": {
+    "player": "U015QGTKGPM",
+    "channel": "D0163FVQD1P",
+    "guessCount": 2,
+    "gameOver": false,
+    "randomNumber": 6,
+    "winner": "Bot",
+    "response": "The number I'm thinking of is lower."
+  }
+}

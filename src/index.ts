@@ -2,30 +2,26 @@ import Bot from './Bot';
 import Game from './models/Game';
 
 const store = require('data-store')({ path: process.cwd() + '/game.json' });
-let game: Game;
-let currentUser: string;
+let games: Game[] = [];
 const params = {
    icon_emoji: ':heart_eyes:',
 };
 
-const responseToUser = async () => {
-   const { response, gameOver, winner } = game;
+const responseToUser = async (game: Game) => {
+   const { response, gameOver, winner, player, channel } = game;
    // return message to user
-   await Bot.postMessageToChannel('general', response, params);
+   await Bot.postMessage(channel, response, params);
    if (gameOver) {
-      await Bot.postMessageToChannel(
-         'general',
-         `Our winner is ${winner}`,
-         params
-      );
-      await Bot.postMessageToChannel('general', 'Game over!', params);
-      store.del(currentUser);
-      initGame();
+      store.del(player);
+      games = games.filter((game) => game.player !== player);
+      await Bot.postMessage('general', `Our winner is ${winner}`, params);
+      await Bot.postMessage(channel, 'Game over!', params);
+      // remove the game when it is over
    }
 };
 
-const initGame = async () => {
-   if (store.get(currentUser)) {
+const initGame = async (player: string, channel: string) => {
+   if (store.get(player)) {
       // continue an old game
       const {
          guessCount,
@@ -33,40 +29,56 @@ const initGame = async () => {
          randomNumber,
          winner,
          response,
-      } = store.get(currentUser).game;
-      game = new Game(guessCount, gameOver, randomNumber, winner, response);
+      } = store.get(player);
+      const game = new Game(
+         player,
+         channel,
+         guessCount,
+         gameOver,
+         randomNumber,
+         winner,
+         response
+      );
+      games.push(game);
+      await Bot.postMessage(
+         channel,
+         `Continue the game, you can guess ${3 - guessCount} times`,
+         params
+      );
    } else {
       // start a new game
-      game = new Game();
+      const game = new Game(player, channel);
+      games.push(game);
+      await Bot.postMessage(
+         channel,
+         'Welcome to the Slack Bot Game, try and guess what number I am thinking of between 0 and 10! You can guess 3 times',
+         params
+      );
    }
-   await Bot.postMessageToChannel(
-      'general',
-      ' Welcome to the Slack Bot Game, try and guess what number I am thinking of between 0 and 10!',
-      params
-   );
 };
 
 Bot.on('message', function (data: any) {
-   const { type, subtype, text } = data;
-   if (type !== 'message' || subtype === 'bot_message') {
+   const { type, subtype, text, channel, user } = data;
+   let foundGame = null;
+   if (type !== 'message' || subtype === 'bot_message') return;
+   if (games.length > 0) {
+      foundGame = games.find((game) => game.player === user);
+   }
+   if (!foundGame && text !== 'botgame start') {
       return;
    }
-   if (!game && text !== 'botgame start') {
-      return;
-   }
-   const { user } = data;
-   currentUser = user;
-   if (!game) {
-      initGame();
+   const player = user;
+   if (!foundGame) {
+      // init a game if it's not started
+      initGame(player, channel);
       return;
    } else {
       const guess = parseInt(text);
       // play the game when get user's message
-      game.play(guess);
-      responseToUser();
-
+      foundGame.play(guess);
+      responseToUser(foundGame);
       // set current game to local
-      store.set(data.user, { game: game });
+      store.set(player, foundGame);
    }
 });
 
