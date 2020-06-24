@@ -71,7 +71,6 @@ Bot.on('message', function (data: any) {
    if (!foundGame) {
       // init a game if it's not started
       initGame(player, channel);
-      return;
    } else {
       const guess = parseInt(text);
       // play the game when get user's message

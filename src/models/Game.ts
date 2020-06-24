@@ -18,7 +18,7 @@ class GameClass {
    ) {
       this.player = player;
       this.channel = channel;
-      this.guessCount = guessCount || 0;
+      this.guessCount = guessCount;
       this.gameOver = gameOver;
       this.randomNumber = randomNumber;
       this.winner = winner;
